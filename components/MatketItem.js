@@ -1,8 +1,7 @@
-import CardNft from "./CardNft";
-import Image from 'next/image';
-import Avax from  '../assets/image/avax.svg'
+import CardMarket from "./CardMarket";
 import NftModel from './NftModel';
 import { useState } from 'react';
+import RecentModel from "./RecentModel";
 
 
 
@@ -12,101 +11,144 @@ const MarketItem = () => {
       const [forSale, setForSale] = useState(true)
 
       const handleForSale = () => {
-            if(forSale) setForSale(false)
-            else setForSale(true)
+            setForSale(true)
+      }
+      const handleForAll = () => {
+            setForSale(false)
       }
 
 
       return ( 
-            <div class="flex flex-col w-full lg:flex-row ">
+            <div>
+
+                        
 
 
-                  {/* Filters */}
-                  <div class="grid flex-grow card rounded-box stats shadow h-[500px] mr-2">
-                        <div class="w-full text-center">
-                              <div class="grid md:grid-cols-1  lg:gap-x-0 items-center ">
-                                    <div class="stat ">
-                                          { forSale ? (
-                                                <div onClick={handleForSale} class="btn-group ">
-                                                      <button class="btn btn-active w-1/2 normal-case">For Sale</button>
-                                                      <button class="btn w-1/2 normal-case ">Shaw All</button>
-                                                </div>
-                                          ):(
-                                                <div onClick={handleForSale} class="btn-group ">
-                                                      <button class="btn  w-1/2 normal-case">For Sale</button>
-                                                      <button class="btn btn-active w-1/2 normal-case ">Shaw All</button>
-                                                </div>
-                                          )}
+                  <div class="flex flex-col w-full lg:flex-row ">
+
+                        {/* Filters */}
+                        <div class="grid flex-grow card rounded-box stats shadow h-[730px] mr-2">
+                              <div class="w-full text-center">
+                                    <div class="grid md:grid-cols-1  lg:gap-x-0 items-center ">
+
+
                                           
-                                    </div>
-                                    <div class="stat">
-                                          <select class="select select-bordered w-full ">
-                                                <option disabled selected>Who shot first?</option>
-                                                <option>Han Solo</option>
-                                                <option>Greedo</option>
-                                          </select>
-                                    </div>
-                                    <div class="stat">
-                                          <select class="select select-bordered w-full ">
-                                                <option disabled selected>Who shot first?</option>
-                                                <option>Han Solo</option>
-                                                <option>Greedo</option>
-                                          </select>
-                                    </div>
-                                    <div class="stat">
-                                          <select class="select select-bordered w-full ">
-                                                <option disabled selected>Who shot first?</option>
-                                                <option>Han Solo</option>
-                                                <option>Greedo</option>
-                                          </select>
-                                    </div>
-                                    <div class="stat">
-                                          <select class="select select-bordered w-full ">
-                                                <option disabled selected>Who shot first?</option>
-                                                <option>Han Solo</option>
-                                                <option>Greedo</option>
-                                          </select>
+                                          <div class="stat">
+                                                <select class="select select-bordered w-full ">
+                                                      <option disabled selected>Sort</option>
+                                                      <option>Han Solo</option>
+                                                      <option>Greedo</option>
+                                                </select>
+                                          </div>
+
+                                          <div class="divider m-0"/>
+
+                                          <div class="  flex justify-end mx-4 ">
+                                                <button class=" w-[100px] btn-outline rounded-full">Clear filters</button>
+                                          </div>
+                                          
+
+                                          <div class="stat ">
+                                                { forSale ? (
+                                                      <div  class="btn-group ">
+                                                            <button onClick={handleForSale} class="btn btn-active w-1/2 normal-case">For Sale</button>
+                                                            <button onClick={handleForAll} class="btn w-1/2 normal-case ">Shaw All</button>
+                                                      </div>
+                                                ):(
+                                                      <div  class="btn-group ">
+                                                            <button onClick={handleForSale} class="btn  w-1/2 normal-case">For Sale</button>
+                                                            <button onClick={handleForAll} class="btn btn-active w-1/2 normal-case ">Shaw All</button>
+                                                      </div>
+                                                )}
+                                                
+                                          </div>
+
+
+
+                                          
+
+                                          <div class="stat">
+                                                <input type="text" placeholder="Search for ID" class="input input-bordered w-full max-w-xs"/>
+                                          </div>
+
+                                          <div class="stat">
+                                                <select class="select select-bordered w-full ">
+                                                      <option disabled selected>Rarity</option>
+                                                      <option>Han Solo</option>
+                                                      <option>Greedo</option>
+                                                </select>
+                                          </div>
+
+                                          <div class="stat">
+                                                <select class="select select-bordered w-full ">
+                                                      <option disabled selected>Hard</option>
+                                                      <option>Han Solo</option>
+                                                      <option>Greedo</option>
+                                                </select>
+                                          </div>
+                                          <div class="stat">
+                                                <select class="select select-bordered w-full ">
+                                                      <option disabled selected>Body</option>
+                                                      <option>Han Solo</option>
+                                                      <option>Greedo</option>
+                                                </select>
+                                          </div>
+                                          <div class="stat">
+                                                <select class="select select-bordered w-full ">
+                                                      <option disabled selected>Hat</option>
+                                                      <option>Han Solo</option>
+                                                      <option>Greedo</option>
+                                                </select>
+                                          </div>
+                                          <div class="stat flex justify-center">
+                                                <label  for="recentModel" class="btn  modal-button btn-outline mt-10  text-sm ">VIEW RECENT SALES</label>
+                                          </div>
                                     </div>
                               </div>
-                        </div>
-                  </div> 
+                        </div> 
 
-                  <div class="divider lg:divider-horizontal"></div> 
+                        <div class="divider lg:divider-horizontal"></div> 
 
-                  {/* NFT */}
-                  <div class="flex flex-col justify-center items-center">
-                        <div class="grid  md:grid-cols-2 xl:grid-cols-4 card rounded-box place-items-center borde">
-                              <CardNft /> 
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
-                              <CardNft />
+                        {/* NFT */}
+                        
+                        <div class="flex flex-col justify-center items-center">
+
+                              <div class="grid  md:grid-cols-2 xl:grid-cols-4 card rounded-box place-items-center borde">
+                                    <CardMarket /> 
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                                    <CardMarket />
+                              </div>
+
+                              {/* Page */}
+                              <div class="btn-group mt-6 flex justify-center items-center">
+                              <button class="btn">«</button>
+                              <button class="btn">-100</button>
+                              <button class="btn">-50</button>
+                              <button class="btn">-25</button>
+                              <button class="btn">‹</button>
+                              <button class="btn">›</button>
+                              <button class="btn">+25</button>
+                              <button class="btn">+50</button>
+                              <button class="btn">+100</button>
+                              <button class="btn">»</button>
+                              </div>
                         </div>
 
-                        {/* Page */}
-                        <div class="btn-group mt-6 flex justify-center items-center">
-                        <button class="btn">«</button>
-                        <button class="btn">-100</button>
-                        <button class="btn">-50</button>
-                        <button class="btn">-25</button>
-                        <button class="btn">‹</button>
-                        <button class="btn">›</button>
-                        <button class="btn">+25</button>
-                        <button class="btn">+50</button>
-                        <button class="btn">+100</button>
-                        <button class="btn">»</button>
-                        </div>
+                        {/* Model 彈窗*/}
+                        <NftModel />
+                        <RecentModel />
+
+
                   </div>
-
-                  {/* NFT Model 彈窗*/}
-                  <NftModel />
 
             </div>
            

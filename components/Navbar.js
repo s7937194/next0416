@@ -6,9 +6,6 @@ const Navbar = () => {
 
       const { theme, setTheme } = useTheme()
 
-
-
-
       return ( 
       <div className="navbar bg-base-100">
             <div className="navbar-start">

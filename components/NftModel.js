@@ -14,16 +14,16 @@ const NftModel = () => {
       return ( 
             <div>
                   
-                  <input type="checkbox" id="my-modal" class="modal-toggle"/>
+                  <input type="checkbox" id="nftModel" class="modal-toggle"/>
                   
-                  <div class="modal bg-black bg-opacity-80" for="my-modal">
+                  <label for="nftModel" class="modal bg-black bg-opacity-80">
                         <div class="modal-box">
                               <div class="flex justify-between items-center pb-2">
                                     <a class="underline" target="_blank">
-                                          <strong class="text-2xl">#393</strong>
+                                          <strong class="text-2xl">Survivor #393</strong>
                                     </a>
                                     
-                                    <label for="my-modal" >
+                                    <label for="nftModel" >
                                           <svg class="cursor-pointer fill-current w-md h-md" fill="#d2cfca" width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"> 
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0.646447 0.646447C0.841709 0.451184 1.15829 0.451184 1.35355 0.646447L9 8.29289L16.6464 0.646447C16.8417 0.451184 17.1583 0.451184 17.3536 0.646447C17.5488 0.841709 17.5488 1.15829 17.3536 1.35355L9.70711 9L17.3536 16.6464C17.5488 16.8417 17.5488 17.1583 17.3536 17.3536C17.1583 17.5488 16.8417 17.5488 16.6464 17.3536L9 9.70711L1.35355 17.3536C1.15829 17.5488 0.841709 17.5488 0.646447 17.3536C0.451184 17.1583 0.451184 16.8417 0.646447 16.6464L8.29289 9L0.646447 1.35355C0.451184 1.15829 0.451184 0.841709 0.646447 0.646447Z" />
                                           </svg>
@@ -80,19 +80,19 @@ const NftModel = () => {
                                           <div class="text-xl xs:text-lg mb-xs text-left m-2 font-bold mt-6">Attributes</div>
                                           <div class="grid grid-cols-2 gap-y-[4px] gap-x-md xs:gap-xs z-[1]">
                                                 <div class="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
-                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-secondary text-base">color</strong>
+                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-primary text-base">color</strong>
                                                       <span class="ml-6 capitalize text-base">brown</span>
                                                 </div>
                                                 <div class="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
-                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-secondary text-base">body</strong>
+                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-primary text-base">body</strong>
                                                       <span class="ml-6 capitalize text-base">brown</span>
                                                 </div>
                                                 <div class="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
-                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-secondary text-base">hat</strong>
+                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-primary text-base">hat</strong>
                                                       <span class="ml-6 capitalize text-base">brown</span>
                                                 </div>
                                                 <div class="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
-                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-secondary text-base">hair</strong>
+                                                      <strong class="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-primary text-base">hair</strong>
                                                       <span class="ml-6 capitalize text-base">brown</span>
                                                 </div>   
                                           </div>
@@ -164,7 +164,7 @@ const NftModel = () => {
                               </div>
                               
                         </div>
-                  </div>
+                  </label>
             </div>
 
        );

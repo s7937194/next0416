@@ -31,11 +31,7 @@ const MarketInfo = () => {
                         <h6 class="font-medium text-gray-500 ">Holder</h6>
                         <h5 class="text-2xl   font-bold ">1044</h5>
                         </div>
-                        
                   </div>
-                  
-
-                  
             </section>
       );
 }
