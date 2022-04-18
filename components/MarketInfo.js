@@ -3,7 +3,7 @@ import Avax from  '../assets/image/avax.svg'
 
 const MarketInfo = () => {
       return (
-            <section class="w-full mb-6  text-center shadow stats px-20 py-10 ">
+            <section class="w-full mb-6  text-center shadow stats  py-10 ">
                   
                   <div class="grid md:grid-cols-2 lg:grid-cols-4 grid-cols-2 lg:gap-x-0 items-center">
                         <div class="mb-6 lg:mb-0 relative">

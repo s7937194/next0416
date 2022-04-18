@@ -3,7 +3,7 @@ import Avax from  '../assets/image/avax.svg'
 
 const FloorPrice = () => {
       return ( 
-            <section class="w-full mb-10  text-center shadow stats px-20 py-2 ">
+            <section class="w-full mb-10  text-center shadow stats py-2 ">
                   
                   <div class="  grid md:grid-cols-2 lg:grid-cols-5 grid-cols-2 lg:gap-x-0 items-center">
 
