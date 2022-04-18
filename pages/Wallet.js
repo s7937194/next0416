@@ -1,32 +1,30 @@
+import CardWalletNft from "../components/CardWalletNft";
+import Claim from "../components/Claim";
+import WalletNftModel from "../components/WalletNftModel";
 
 
 const Wallet = () => {
       return ( 
-            <div class="hero min-h-screen bg-base-200">
-                  <div class="hero-content text-center">
-                        <div class="max-w-md">
+            <div class="hero min-h-screen bg-base-200 ">
+                  <div class="text-center w-[90%] xl:w-[70%] my-10 ">
+                        <Claim/>
 
+                        <div class="flex flex-col justify-center items-center">
 
-                              {/* 質押*/}
-                              <div class="stats bg-primary text-primary-content">
-                                    <div class="stat">
-                                          <div class="stat-title">Account balance</div>
-                                          <div class="stat-value">$89,400</div>
-                                          <div class="stat-actions">
-                                                <button class="btn btn-sm btn-success">Claim</button>
-                                          </div>
-                                    </div>
-                                    
-                                    <div class="stat">
-                                          <div class="stat-title">Current balance</div>
-                                          <div class="stat-value">$89,400</div>
-                                          <div class="stat-actions">
-                                                <button class="btn btn-sm">Claim</button>
-                                          </div>
-                                    </div>
-                              
+                              <div class="grid  md:grid-cols-2 xl:grid-cols-4 card rounded-box place-items-center borde">
+                                    <CardWalletNft /> 
+                                    <CardWalletNft />
+                                    <CardWalletNft />
+                                    <CardWalletNft />
+                                    <CardWalletNft />
+                                    <CardWalletNft />
+                                    <CardWalletNft />
+                                    <CardWalletNft />
                               </div>
+                              <WalletNftModel/>
                         </div>
+
+
                   </div>
             </div>
        );

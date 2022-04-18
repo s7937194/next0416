@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Avax from  '../assets/image/avax.svg'
 
-const NftModel = () => {
+const WalletNftModel = () => {
 
       const [detailSwitch,setDetailSwitch] =useState(false)
 
@@ -13,16 +13,16 @@ const NftModel = () => {
 
       return ( 
             <div>
-                  <input type="checkbox" id="nftModel" class="modal-toggle"/>
+                  <input type="checkbox" id="WalletNftModel" class="modal-toggle"/>
                   
-                  <div class="modal bg-black bg-opacity-80" for="nftModel">
+                  <div class="modal bg-black bg-opacity-80" for="WalletNftModel">
                         <div class="modal-box">
                               <div class="flex justify-between items-center pb-2">
                                     <a class="underline" target="_blank">
                                           <strong class="text-2xl">Survivor #393</strong>
                                     </a>
                                     
-                                    <label for="nftModel" >
+                                    <label for="WalletNftModel" >
                                           <svg class="cursor-pointer fill-current w-md h-md" fill="#d2cfca" width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"> 
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0.646447 0.646447C0.841709 0.451184 1.15829 0.451184 1.35355 0.646447L9 8.29289L16.6464 0.646447C16.8417 0.451184 17.1583 0.451184 17.3536 0.646447C17.5488 0.841709 17.5488 1.15829 17.3536 1.35355L9.70711 9L17.3536 16.6464C17.5488 16.8417 17.5488 17.1583 17.3536 17.3536C17.1583 17.5488 16.8417 17.5488 16.6464 17.3536L9 9.70711L1.35355 17.3536C1.15829 17.5488 0.841709 17.5488 0.646447 17.3536C0.451184 17.1583 0.451184 16.8417 0.646447 16.6464L8.29289 9L0.646447 1.35355C0.451184 1.15829 0.451184 0.841709 0.646447 0.646447Z" />
                                           </svg>
@@ -37,10 +37,7 @@ const NftModel = () => {
                                           </div>
                                           <div class="flex justify-between items-start ml-6 flex-col">
                                                 <div class="flex flex-col text-md w-full">
-                                                      <span class="flex flex-wrap pb-xs xs:pb-0 my-1">
-                                                            <strong>Owner: &nbsp;</strong>
-                                                            <a class="underline" href="/">0xa5b7...c68de6</a>
-                                                      </span>
+
 
                                                       <span class="flex flex-wrap pb-xs xs:pb-0 my-1">
                                                             <strong>Creator: &nbsp;</strong>
@@ -61,9 +58,30 @@ const NftModel = () => {
                                                       
                                                 </div>
 
-                                                <button class="btn rounded-full text-xl px-10">
-                                                      7 &nbsp;<Image src={Avax} width={20} height={20}/>&nbsp; BUY
-                                                </button>
+                                                <label for="my-modal" class="btn btn-primary rounded-full text-xl px-10 modal-button capitalize">
+                                                      List NFT
+                                                </label>
+
+                                                <input type="checkbox" id="my-modal" class="modal-toggle"/>
+                                                <div class="modal">
+                                                      <div class="modal-box">
+                                                            <div class="form-control w-full  flex justify-center">
+                                                                  <h3 class="font-bold text-2xl mb-5 mt-5">Sell your NFT on the marketplace</h3>
+                                                                  <div>
+                                                                        <input type="number" placeholder="1" class="input input-bordered w-[60%] "/>
+                                                                  </div>
+                                                                  <span class="label-text-alt">Price in AVAX</span>
+                                                                  
+                                   
+                                                            </div>
+
+                                                            <div class="modal-action flex justify-center">
+                                                                  <label  class="btn btn-primary capitalize ">List</label>
+                                                                  <label for="my-modal" class="btn capitalize ">Cancel</label>
+                                                            </div>
+                                                      </div>
+                                                </div>
+
                                           </div>
                                     </div>
 
@@ -142,6 +160,8 @@ const NftModel = () => {
                                                 </div>
                                           </div>
 
+
+                                          
                                           
                                           
                                                 
@@ -150,10 +170,7 @@ const NftModel = () => {
                                         
                                     
 
-                                          
-                                          
-
-
+                              
 
 
                                           {/*this */}
@@ -169,4 +186,4 @@ const NftModel = () => {
        );
 }
  
-export default NftModel;
+export default WalletNftModel;

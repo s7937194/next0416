@@ -1,5 +1,5 @@
 import CardMarket from "./CardMarket";
-import NftModel from './NftModel';
+import MarketNftModel from './MarketNftModel';
 import { useState } from 'react';
 import RecentModel from "./RecentModel";
 
@@ -144,7 +144,7 @@ const MarketItem = () => {
                         </div>
 
                         {/* Model 彈窗*/}
-                        <NftModel />
+                        <MarketNftModel />
                         <RecentModel />
 
 
