@@ -6,7 +6,7 @@ const RecentModel = () => {
             <div>  
                   <input type="checkbox" id="recentModel" class="modal-toggle"/>
                   <label for="recentModel" class="modal bg-black bg-opacity-80">
-                        <div class="modal-box w-4/12 max-w-5xl">
+                        <label class="modal-box w-4/12 max-w-5xl" for="">
                               <div class="flex justify-between items-center pb-2">   
                                     <a class="" target="_blank">
                                           <strong class="text-2xl mr-2">Recent Market Sales</strong>
@@ -59,7 +59,7 @@ const RecentModel = () => {
                               
 
   
-                        </div>
+                        </label>
                   </label>
             </div>
            

@@ -17,7 +17,7 @@ const NftModel = () => {
                   <input type="checkbox" id="nftModel" class="modal-toggle"/>
                   
                   <label for="nftModel" class="modal bg-black bg-opacity-80">
-                        <div class="modal-box">
+                        <label class="modal-box" for="">
                               <div class="flex justify-between items-center pb-2">
                                     <a class="underline" target="_blank">
                                           <strong class="text-2xl">Survivor #393</strong>
@@ -163,7 +163,7 @@ const NftModel = () => {
 
                               </div>
                               
-                        </div>
+                        </label>
                   </label>
             </div>
 
