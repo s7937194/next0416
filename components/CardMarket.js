@@ -5,7 +5,7 @@ const CardMarket = () => {
 
       return ( 
             <label for="MarketNftModel" class=" modal-button">
-                  <div class="card card-compact w-[300px] bg-base-100 shadow-xl ml-4 my-2 mr-2 hover:scale-105">
+                  <div class="card card-compact w-[300px] bg-base-100 shadow-xl  my-2 mx-2 hover:scale-105">
                         <figure><img class="w-[300px] h-[300px]" src="https://api.lorem.space/image/shoes?w=400&h=225" alt="Shoes" /></figure>
                         <div class="card-body">
                               <div class="card-actions justify-center items-center">

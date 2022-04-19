@@ -11,7 +11,7 @@ const Wallet = () => {
 
                         <div class="flex flex-col justify-center items-center">
 
-                              <div class="grid  md:grid-cols-2 xl:grid-cols-4 card rounded-box place-items-center borde">
+                              <div class="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                                     <CardWalletNft /> 
                                     <CardWalletNft />
                                     <CardWalletNft />
