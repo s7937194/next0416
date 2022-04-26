@@ -69,8 +69,8 @@ const Wallet = () => {
         <div className="hero min-h-screen bg-base-200 ">
             <div className="text-center w-[90%] xl:w-[70%] my-10 ">
                 <Claim/>
-                <div className="flex flex-col justify-center items-center">
-                    <div className="grid  md:grid-cols-2 xl:grid-cols-4 card rounded-box place-items-center borde">
+                <div className="flex flex-col justify-center items-center">                             
+                    <div class="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                         {nfts.length > 0 ? (
                             nfts.sort((a, b) => (a.id > b.id) ? 1 : -1).map((cryptoboy, index) => {
                                 return (

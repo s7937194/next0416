@@ -20,9 +20,9 @@ const MarketItem = () => {
             <div className="flex flex-col w-full lg:flex-row ">
 
                 {/* Filters */}
-                <div className="grid flex-grow card rounded-box stats shadow h-[730px] mr-2">
+                <div class="card rounded-box stats shadow h-[730px] lg:w-[300px]">
                         <div className="w-full text-center">
-                            <div className="grid md:grid-cols-1  lg:gap-x-0 items-center ">
+                            <div class="grid md:grid-cols-1 items-center ">
                                 <div className="stat">
                                     <select className="select select-bordered w-full ">
                                             <option disabled selected>Sort</option>
@@ -97,9 +97,9 @@ const MarketItem = () => {
 
                 {/* NFT */}
                 
-                <div className="flex flex-col justify-center items-center">
+                <div class="flex flex-col justify-center items-center basis-10/12">
 
-                    <div className="grid  md:grid-cols-2 xl:grid-cols-4 card rounded-box place-items-center borde">
+                    <div class="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                         <CardMarket /> 
                         <CardMarket />
                         <CardMarket />
