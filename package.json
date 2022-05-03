@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.6.0",
     "daisyui": "^2.14.0",
     "moralis": "^1.5.9",
     "next": "12.1.5",

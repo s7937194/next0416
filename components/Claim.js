@@ -48,18 +48,18 @@ const Claim = () => {
     }
 
     const MintReward = async () => {
-        await Moralis.enableWeb3();
-        const options = {
-            contractAddress: cryptoboysAddress,
-            abi: CryptoContract,
-        };
+        // await Moralis.enableWeb3();
+        // const options = {
+        //     contractAddress: cryptoboysAddress,
+        //     abi: CryptoContract,
+        // };
 
-        const resp = await Moralis.executeFunction({
-            functionName: "getReflectionBalances",
-            ...options,
-        });
+        // const resp = await Moralis.executeFunction({
+        //     functionName: "getReflectionBalances",
+        //     ...options,
+        // });
 
-        setMintReward(resp.toNumber());
+        // setMintReward(resp.toNumber());
     }
 
     const CliamMintReward = async () => {

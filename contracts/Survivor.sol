@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC721URIStorage{
+contract Survivors is Context,  AccessControlEnumerable, ERC721Enumerable, ERC721URIStorage{
     using Counters for Counters.Counter;
     Counters.Counter public _tokenIdTracker;
 
@@ -23,8 +23,13 @@ contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC7
     mapping (uint256 => uint256) public lastDividendAt;
     mapping (uint256 => address ) public minter;
 
-    constructor(string memory baseTokenURI, uint max, address admin, address admin2) ERC721("CryptoBoys Tokens", "ACT") {
+    bool public _revealed = false;
+    string public _notRevealedUri;
+    string public baseExtension = "";
+
+    constructor(string memory baseTokenURI, string memory notRevealedUri, uint max, address admin, address admin2) ERC721("Survivors", "ST") {
         _baseTokenURI = baseTokenURI;
+        _notRevealedUri = notRevealedUri;
         _max = max;
         _admin = admin;
         _admin2 = admin2;
@@ -37,7 +42,7 @@ contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC7
     }
 
     function setBaseURI(string memory baseURI) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "CryptoBoys: must have admin role to change base URI");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Survivors: must have admin role to change base URI");
         _baseTokenURI = baseURI;
     }
 
@@ -47,7 +52,7 @@ contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC7
     }
 
     function setPrice(uint mintPrice) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "CryptoBoys: must have admin role to change price");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Survivors: must have admin role to change price");
         _price = mintPrice;
     }
 
@@ -55,19 +60,21 @@ contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC7
         return _price;
     }
 
-    function cryptoBoyCounter() public view returns (uint256) {
+    function survivorsCounter() public view returns (uint256) {
         return _tokenIdTracker.current();
     }
 
-    function mint() public payable {
+    function mint(uint amount) public payable {
 
-        require(msg.value == _price, "CryptoBoys: must send correct price");
-        require(_tokenIdTracker.current() <= _max, "CryptoBoys: not enough avax apes left to mint amount");
-        _mint(msg.sender, _tokenIdTracker.current());
-        minter[_tokenIdTracker.current()] = msg.sender;
-        lastDividendAt[_tokenIdTracker.current()] = totalDividend;
+        require(msg.value == _price*amount, "Survivors: must send correct price");
+        require(_tokenIdTracker.current() <= _max, "Survivors: not enough avax apes left to mint amount");
+        for (uint i = 0; i < amount; i++) {
+            _mint(msg.sender, _tokenIdTracker.current());
+            minter[_tokenIdTracker.current()] = msg.sender;
+            lastDividendAt[_tokenIdTracker.current()] = totalDividend;
 
-        _tokenIdTracker.increment();
+            _tokenIdTracker.increment();
+        }
         splitBalance(msg.value);
     }
 
@@ -79,8 +86,19 @@ contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC7
         return ERC721URIStorage._burn(tokenId);
     }
 
+    function flipReveal() external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Survivors: must have admin role to change revealed");
+        _revealed = !_revealed;
+    }
+
+    function setNotRevealedURI(string memory __notRevealedURI) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Survivors: must have admin role to change Not Revealed URI");
+        _notRevealedUri = __notRevealedURI;
+    }
+
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        return ERC721URIStorage.tokenURI(tokenId);
+
+        return string(abi.encodePacked(ERC721URIStorage.tokenURI(tokenId), baseExtension));
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721, ERC721Enumerable) {
@@ -122,7 +140,7 @@ contract CryptoBoys is Context,  AccessControlEnumerable, ERC721Enumerable, ERC7
     }
 
     function claimReward(uint256 tokenId) public {
-        require(ownerOf(tokenId) == _msgSender() || getApproved(tokenId) == _msgSender(), "CryptoBoys: Only owner or approved can claim rewards");
+        require(ownerOf(tokenId) == _msgSender() || getApproved(tokenId) == _msgSender(), "Survivors: Only owner or approved can claim rewards");
         uint256 balance = getReflectionBalance(tokenId);
         payable(ownerOf(tokenId)).transfer(balance);
         lastDividendAt[tokenId] = totalDividend;

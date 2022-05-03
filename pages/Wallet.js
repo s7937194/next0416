@@ -9,19 +9,26 @@ import {cryptoboysAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID } f
 const Wallet = () => {
 
     const { account, Moralis } = useMoralis();
-    const [ nfts, setNFTs ] = useState([]);
-
-    const startOptions = {
-        appId : MORALIS_APPLICATION_ID,
-        serverUrl : MORALIS_SERVER_URL,
-    }
+    const [NFTResult, setNFTResult] = useState([]);
 
     useEffect( async () => {
-        await allNFTs();
+        let isMounted = false;
+
+        if (!isMounted) {
+            await allNFTs();
+            console.log("allNFTs Done");
+        }
+
+        return () => {
+            isMounted = true;
+        }
     }, [account]);
 
     const allNFTs = async () => {
-
+        const startOptions = {
+            appId : MORALIS_APPLICATION_ID,
+            serverUrl : MORALIS_SERVER_URL,
+        }
         await Moralis.start(startOptions);
         
         const options = {
@@ -29,40 +36,45 @@ const Wallet = () => {
             token_address: cryptoboysAddress,
             chain: chain,
         };
-        
-        const allCryptoBoys = await Moralis.Web3API.account.getNFTsForContract(options);
-        
-        let arr = [];
-        allCryptoBoys.result.forEach(function(nft){
 
-            let url = fixUrl(nft.token_uri);
-            
-            fetch(url)
-            .then(res => res.json())
-            .then(data => {
+        const NFTs = await Moralis.Web3API.account.getNFTsForContract(options);
 
-                var newElement = {
-                    'img' : fixUrl(data.image),
-                    'name': data.name,
-                    'id'  : nft.token_id,
+        const totalNum = NFTs.total;
+        const pageSize = NFTs.page_size;
+        console.log(totalNum);
+        console.log(pageSize);
+        let allNFTs = NFTs.result;
+
+        let nftResult = [];
+        let metadata = allNFTs.map((e) => JSON.parse(e.metadata));
+        for (let j = 0; j < metadata.length; j++) {
+            if (allNFTs[j].metadata) {
+                allNFTs[j].metadata = JSON.parse(allNFTs[j].metadata);
+                allNFTs[j].image = resolveLink(allNFTs[j].metadata.image);
+            } else if (allNFTs[j].token_uri) {
+                try {
+                    await fetch(allNFTs[j].token_uri)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        allNFTs[j].image = resolveLink(data.image);
+                    });
+                } catch (error) {
+                    console.log(error);
                 }
-                arr.push(newElement);
+            }
+        
+            nftResult.push({
+                name: allNFTs[j].name,
+                token_id: allNFTs[j].token_id,
+                image: allNFTs[j].image,
             });
-        })
-        console.log(arr);
-        setNFTs(arr);
+        }
+        setNFTResult(nftResult);
     };
 
-    function fixUrl(url) {
-        if (url.startsWith("ipfs")) {
-            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1];
-        } else {
-            if (url.endsWith("json")) {
-                return url + "?format=json";
-            }else {
-                return url + ".json?format=json";
-            }
-        }
+    const resolveLink = (url) => {
+        if (!url || !url.includes("ipfs://")) return url;
+        return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
     };
 
     return ( 
@@ -70,16 +82,22 @@ const Wallet = () => {
             <div className="text-center w-[90%] xl:w-[70%] my-10 ">
                 <Claim/>
                 <div className="flex flex-col justify-center items-center">                             
-                    <div class="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
-                        {nfts.length > 0 ? (
-                            nfts.sort((a, b) => (a.id > b.id) ? 1 : -1).map((cryptoboy, index) => {
+                    <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
+                        { NFTResult.length > 0 &&
+                            NFTResult.map((nft, index) => {
                                 return (
-                                    <CardWalletNft key={index} img={cryptoboy.img} id={cryptoboy.id} name={cryptoboy.name} />
+                                    <CardWalletNft key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
                                 );
                             })
-                        ):null}
+                        }
                     </div>
-                    <WalletNftModel/>
+                    { NFTResult.length > 0 ? (
+                        NFTResult.map((nft, index) => {
+                            return (
+                                <WalletNftModel key={index} tokenId={nft.token_id}/>
+                            );
+                        })
+                    ) : null }
                 </div>
             </div>
         </div>

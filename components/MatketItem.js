@@ -1,10 +1,17 @@
 import CardMarket from "./CardMarket";
 import MarketNftModel from './MarketNftModel';
-import { useState } from 'react';
 import RecentModel from "./RecentModel";
+
+
+import React, {useState, useEffect} from 'react'
+import { useMoralis } from "react-moralis"
+import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID } from "../config"
 
 const MarketItem = () => {
 
+    const { account, Moralis } = useMoralis();
+    const [NFTResult, setNFTResult] = useState([]);
+    const [nft, setNft] = useState();
     const [forSale, setForSale] = useState(true)
 
     const handleForSale = () => {
@@ -14,15 +21,83 @@ const MarketItem = () => {
         setForSale(false)
     }
 
+    useEffect( async () => {
+        let isMounted = false;
+
+        if (!isMounted) {
+            await allNFTs();
+            console.log("allNFTs Done");
+        }
+
+        return () => {
+            isMounted = true;
+        }
+    }, [account]);
+
+    const allNFTs = async () => {
+        const startOptions = {
+            appId : MORALIS_APPLICATION_ID,
+            serverUrl : MORALIS_SERVER_URL,
+        }
+        await Moralis.start(startOptions);
+        
+        const options = {
+            address: marketAddress,
+            token_address: cryptoboysAddress,
+            chain: chain,
+        };
+
+        const NFTs = await Moralis.Web3API.account.getNFTsForContract(options);
+
+        console.log(NFTs);
+
+        const totalNum = NFTs.total;
+        const pageSize = NFTs.page_size;
+        console.log(totalNum);
+        console.log(pageSize);
+        let allNFTs = NFTs.result;
+
+        let nftResult = [];
+        let metadata = allNFTs.map((e) => JSON.parse(e.metadata));
+        for (let j = 0; j < metadata.length; j++) {
+            if (allNFTs[j].metadata) {
+                allNFTs[j].metadata = JSON.parse(allNFTs[j].metadata);
+                allNFTs[j].image = resolveLink(allNFTs[j].metadata.image);
+            } else if (allNFTs[j].token_uri) {
+                try {
+                    await fetch(allNFTs[j].token_uri)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        allNFTs[j].image = resolveLink(data.image);
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        
+            nftResult.push({
+                name: allNFTs[j].name,
+                token_id: allNFTs[j].token_id,
+                image: allNFTs[j].image,
+            });
+        }
+        setNFTResult(nftResult);
+    };
+
+    const resolveLink = (url) => {
+        if (!url || !url.includes("ipfs://")) return url;
+        return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
+    };
+
 
     return ( 
         <div>
             <div className="flex flex-col w-full lg:flex-row ">
 
                 {/* Filters */}
-                <div class="card rounded-box stats shadow h-[730px] lg:w-[300px]">
+                <div className="card rounded-box stats shadow h-[730px] lg:w-[300px]">
                         <div className="w-full text-center">
-                            <div class="grid md:grid-cols-1 items-center ">
+                            <div className="grid md:grid-cols-1 items-center ">
                                 <div className="stat">
                                     <select className="select select-bordered w-full ">
                                             <option disabled selected>Sort</option>
@@ -87,7 +162,7 @@ const MarketItem = () => {
                                     </select>
                                 </div>
                                 <div className="stat flex justify-center">
-                                    <label  for="recentModel" className="btn  modal-button btn-outline mt-10  text-sm ">VIEW RECENT SALES</label>
+                                    <label  htmlFor="recentModel" className="btn  modal-button btn-outline mt-10  text-sm ">VIEW RECENT SALES</label>
                                 </div>
                             </div>
                         </div>
@@ -97,9 +172,9 @@ const MarketItem = () => {
 
                 {/* NFT */}
                 
-                <div class="flex flex-col justify-center items-center basis-10/12">
+                <div className="flex flex-col justify-center items-center basis-10/12">
 
-                    <div class="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
+                    <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                         <CardMarket /> 
                         <CardMarket />
                         <CardMarket />

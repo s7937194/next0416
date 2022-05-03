@@ -70,8 +70,6 @@ const MarketInfo = () => {
         const options = { address: cryptoboysAddress, chain: chain };
         const nftOwners = await Moralis.Web3API.token.getNFTOwners(options);
 
-        console.log(nftOwners);
-
         let arr1 = [];
         nftOwners.result.forEach(async (nftInfo) => {
             if (!arr1.includes(nftInfo.owner_of)) {
