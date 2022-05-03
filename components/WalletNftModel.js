@@ -29,6 +29,19 @@ const WalletNftModel = ({tokenId=""}) => {
     };
 
     const handleSelectToken = async (num) => {
+        // if (num && collectionName) {
+        //     const dbNFTs = Moralis.Object.extend(collectionName);
+        //     const query = new Moralis.Query(dbNFTs);
+        //     query.equalTo("tokenId", num);
+        //     let selectedNFT = await query.first();
+
+        //     if (selectedNFT != null) {
+        //         selectedNFT = selectedNFT.attributes;
+        //         console.log(selectedNFT);
+        //         setNft(selectedNFT);
+        //         // setDetailSwitch(true);
+        //     }
+        // }
         if (num) {
             const options = {
                 address: cryptoboysAddress,
@@ -39,6 +52,7 @@ const WalletNftModel = ({tokenId=""}) => {
             let metadata = JSON.parse(tokenIdMetadata.metadata)
             setNft(metadata);
         }
+
     }
 
     const handleTokenDetail = async (tokenId) => {
