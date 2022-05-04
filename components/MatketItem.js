@@ -175,7 +175,7 @@ const MarketItem = () => {
                 <div className="flex flex-col justify-center items-center basis-10/12">
 
                     <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
-                        <CardMarket /> 
+                        {/* <CardMarket /> 
                         <CardMarket />
                         <CardMarket />
                         <CardMarket />
@@ -186,7 +186,14 @@ const MarketItem = () => {
                         <CardMarket />
                         <CardMarket />
                         <CardMarket />
-                        <CardMarket />
+                        <CardMarket /> */}
+                        { NFTResult.length > 0 &&
+                            NFTResult.map((nft, index) => {
+                                return (
+                                    <CardMarket key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
+                                );
+                            })
+                        }
                     </div>
 
                     {/* Page */}

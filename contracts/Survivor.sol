@@ -97,7 +97,9 @@ contract Survivors is Context,  AccessControlEnumerable, ERC721Enumerable, ERC72
     }
 
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-
+        if (_revealed == false) {
+            return _notRevealedUri;
+        }
         return string(abi.encodePacked(ERC721URIStorage.tokenURI(tokenId), baseExtension));
     }
 
