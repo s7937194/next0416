@@ -48,13 +48,11 @@ const MarketItem = () => {
         };
 
         const NFTs = await Moralis.Web3API.account.getNFTsForContract(options);
-
-        console.log(NFTs);
-
-        const totalNum = NFTs.total;
-        const pageSize = NFTs.page_size;
-        console.log(totalNum);
-        console.log(pageSize);
+        // console.log(NFTs);
+        // const totalNum = NFTs.total;
+        // const pageSize = NFTs.page_size;
+        // console.log(totalNum);
+        // console.log(pageSize);
         let allNFTs = NFTs.result;
 
         let nftResult = [];
@@ -175,29 +173,15 @@ const MarketItem = () => {
                 <div className="flex flex-col justify-center items-center basis-10/12">
 
                     <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
-                        {/* <CardMarket /> 
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket />
-                        <CardMarket /> */}
-                        { NFTResult.length > 0 &&
-                            NFTResult.map((nft, index) => {
-                                return (
-                                    <CardMarket key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
-                                );
-                            })
-                        }
+                        { NFTResult.length > 0 && NFTResult.map((nft, index) => {
+                            return (
+                                <CardMarket key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
+                            );
+                        }) }
                     </div>
 
                     {/* Page */}
-                    <div className="btn-group mt-6 flex justify-center items-center">
+                    {/* <div className="btn-group mt-6 flex justify-center items-center">
                         <button className="btn">«</button>
                         <button className="btn">-100</button>
                         <button className="btn">-50</button>
@@ -208,13 +192,20 @@ const MarketItem = () => {
                         <button className="btn">+50</button>
                         <button className="btn">+100</button>
                         <button className="btn">»</button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Model 彈窗*/}
-                <MarketNftModel />
-                <RecentModel />
-
+                { NFTResult.length > 0 && NFTResult.map((nft, index) => {
+                    return (
+                        <MarketNftModel key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
+                    );
+                }) }
+                {/* { NFTResult.length > 0 && NFTResult.map((nft, index) => {
+                    return (
+                        <RecentModel key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
+                    );
+                }) } */}
 
             </div>
         </div>

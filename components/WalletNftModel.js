@@ -12,7 +12,7 @@ const WalletNftModel = ({tokenId=""}) => {
     const [detailSwitch,setDetailSwitch] = useState(false)
     const [nft, setNft] = useState();
     const [nftDetail, setNftDetail] = useState();
-    const [ price, setPrice ] = useState(1);
+    const [price, setPrice] = useState(1);
 
     const { account, Moralis } = useMoralis();
     const Web3Api = useMoralisWeb3Api();
