@@ -5,15 +5,13 @@ import RecentModel from "./RecentModel";
 
 import React, {useState, useEffect} from 'react'
 import { useMoralis } from "react-moralis"
-import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID } from "../config"
+import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName } from "../config"
 
 const MarketItem = () => {
 
     const { account, Moralis } = useMoralis();
     const [NFTResult, setNFTResult] = useState([]);
-    const [nft, setNft] = useState();
-    const [forSale, setForSale] = useState(true)
-
+    const [forSale, setForSale] = useState(true);
     const handleForSale = () => {
         setForSale(true)
     }
@@ -26,7 +24,6 @@ const MarketItem = () => {
 
         if (!isMounted) {
             await allNFTs();
-            console.log("allNFTs Done");
         }
 
         return () => {
@@ -82,6 +79,71 @@ const MarketItem = () => {
         setNFTResult(nftResult);
     };
 
+    const handleSelectToken = async (num, col) => {
+        if (num && col) {
+            const dbNFTs = Moralis.Object.extend(col);
+            const query = new Moralis.Query(dbNFTs);
+            console.log(num);
+            query.equalTo("tokenId", num);
+            let selectedNFT = await query.first();
+            selectedNFT = selectedNFT.attributes;
+            console.log(selectedNFT);
+            setNFTResult([{
+                name: collectionName,
+                token_id: selectedNFT.tokenId,
+                image: selectedNFT.image,
+            }]);
+        }
+    };
+
+    const handleSelectByRarity = async (rarityTag) => {
+        if (rarityTag) {
+            const dbNFTs = Moralis.Object.extend(collectionName);
+            const query = new Moralis.Query(dbNFTs);
+            query.equalTo("rarityTag", rarityTag);
+            let selectedList = await query.find();
+            
+            let nftResult = [];
+            for (let i = 0; i < selectedList.length; i++) {
+
+                let selectedNFT = selectedList[i].attributes;
+                nftResult.push({
+                    name: collectionName,
+                    token_id: selectedNFT.tokenId,
+                    image: selectedNFT.image,
+                    rarity_tag: selectedNFT.rarityTag,
+                });
+            }
+            setNFTResult(nftResult);
+        }
+    };
+
+    const handleSelectByAttr = async (attr) => {
+        if (attr) {
+            console.log(attr);
+            const dbNFTs = Moralis.Object.extend(collectionName);
+            const query = new Moralis.Query(dbNFTs);
+            query.containedIn("attributes", [attr]);
+
+            let selectedList = await query.find();
+            console.log(selectedList);
+            // selectedNFT = selectedNFT.attributes;
+            let nftResult = [];
+            for (let i = 0; i < selectedList.length; i++) {
+
+                let selectedNFT = selectedList[i].attributes;
+                nftResult.push({
+                    name: collectionName,
+                    token_id: selectedNFT.tokenId,
+                    image: selectedNFT.image,
+                    rarity_tag: selectedNFT.rarityTag,
+                });
+            }
+            console.log(nftResult);
+            setNFTResult(nftResult);
+        }
+    };
+
     const resolveLink = (url) => {
         if (!url || !url.includes("ipfs://")) return url;
         return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
@@ -127,25 +189,42 @@ const MarketItem = () => {
                                 </div>
 
                                 <div className="stat">
-                                    <input type="text" placeholder="Search for ID" className="input input-bordered w-full max-w-xs"/>
+                                    <input type="text" placeholder="Search for ID" className="input input-bordered w-full max-w-xs"
+                                        onChange={(e) => {
+                                            if (e.target.value != "") {
+                                                handleSelectToken(e.target.value, collectionName)
+                                            }
+                                        }}
+                                    />
                                 </div>
 
                                 <div className="stat">
-                                    <select className="select select-bordered w-full ">
+                                    <select className="select select-bordered w-full "
+                                        onChange={(e) => {
+                                            handleSelectByRarity(e.target.value)
+                                        }}>
                                         <option disabled selected>Rarity</option>
-                                        <option>Han Solo</option>
-                                        <option>Greedo</option>
+                                        <option value="Lengendary">Lengendary</option>
+                                        <option value="Mystic">Mystic</option>
+                                        <option value="Rare">Rare</option>
+                                        <option value="Uncommon">Uncommon</option>
+                                        <option value="Common">Common</option>
                                     </select>
                                 </div>
 
                                 <div className="stat">
-                                    <select className="select select-bordered w-full ">
-                                        <option disabled selected>Hard</option>
-                                        <option>Han Solo</option>
-                                        <option>Greedo</option>
+                                    <select className="select select-bordered w-full "
+                                    onChange={(e) => {
+                                        handleSelectByAttr(e.target.value)
+                                    }}>
+                                        <option disabled selected>Eyeball</option>
+                                        <option value="White">White</option>
+                                        <option value="Yellow">Yellow</option>
+                                        <option value="Red">Red</option>
+                                        
                                     </select>
                                 </div>
-                                <div className="stat">
+                                {/* <div className="stat">
                                     <select className="select select-bordered w-full ">
                                         <option disabled selected>Body</option>
                                         <option>Han Solo</option>
@@ -158,7 +237,7 @@ const MarketItem = () => {
                                         <option>Han Solo</option>
                                         <option>Greedo</option>
                                     </select>
-                                </div>
+                                </div> */}
                                 <div className="stat flex justify-center">
                                     <label  htmlFor="recentModel" className="btn  modal-button btn-outline mt-10  text-sm ">VIEW RECENT SALES</label>
                                 </div>
@@ -175,7 +254,7 @@ const MarketItem = () => {
                     <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                         { NFTResult.length > 0 && NFTResult.map((nft, index) => {
                             return (
-                                <CardMarket key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
+                                <CardMarket key={index} tokenId={nft.token_id} src={nft.image} name={nft.name} rarity={nft.rarity_tag}/>
                             );
                         }) }
                     </div>

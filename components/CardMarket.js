@@ -10,21 +10,25 @@ const CardMarket = ({src="", tokenId="", name="", rarity="Common"}) => {
 
     const { account, Moralis } = useMoralis();
     const [nft, setNft] = useState();
-    const Web3Api = useMoralisWeb3Api();
+    // const Web3Api = useMoralisWeb3Api();
 
     const getListing = async (id) => {
-
         const ercOpts = {
             contractAddress: marketAddress,
             abi: MarketContract,
         };
 
-        const listItem = await Moralis.executeFunction({
-            functionName: "listings",
-            params : { "": id },
-            ...ercOpts,
-        });
-        setNft(listItem);
+        try {
+            const listItem = await Moralis.executeFunction({
+                functionName: "listings",
+                params : { "": id },
+                ...ercOpts,
+            });
+            setNft(listItem);
+        } catch (err) {
+            console.log("Error getting listings"+ err.message);
+        }
+        
     }
 
     useEffect( async () => {
@@ -58,10 +62,10 @@ const CardMarket = ({src="", tokenId="", name="", rarity="Common"}) => {
                         <a>Price</a>
                         <a className="">{nft && nft.price.toString()} <Image src={Avax} width={15} height={15}/></a>
                     </div>
-                    <div className="flex justify-between text-lg font-medium">
+                    {/* <div className="flex justify-between text-lg font-medium">
                         <a>Last Price</a>
                         <a>0 <Image src={Avax} width={15} height={15}/></a>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </label>

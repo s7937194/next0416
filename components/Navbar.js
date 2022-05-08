@@ -2,16 +2,18 @@ import { useTheme } from 'next-themes'
 import { useState, useEffect } from "react"
 import { useMoralis } from "react-moralis";
 import { ENV_ChainId } from '../config'
+import { getEllipsisTxt } from "../helpers/formatters";
 
 const Navbar = () => {
 
     const { theme, setTheme } = useTheme();
-    const { account, authenticate, isAuthenticated, logout, Moralis} = useMoralis();
+    const { account, chainId, authenticate, isAuthenticated, logout, Moralis} = useMoralis();
     const [ address, setAddress ] = useState("CONNECT");
+  
 
     useEffect( async () => {
         if (account != null) {
-            await setAddress(account.slice(0, 10));
+            await setAddress(getEllipsisTxt(account, 6));
         }
         console.log(address);
         
@@ -19,8 +21,6 @@ const Navbar = () => {
     
     const initApp = async () => {
         await Moralis.enableWeb3();
-
-        let chainId = await Moralis.chainId;
 
         if (chainId != ENV_ChainId) {
             const chainIdHex = await Moralis.switchNetwork(ENV_ChainId);

@@ -16,7 +16,6 @@ const Wallet = () => {
 
         if (!isMounted) {
             await allNFTs();
-            console.log("allNFTs Done");
         }
 
         return () => {
@@ -39,10 +38,10 @@ const Wallet = () => {
 
         const NFTs = await Moralis.Web3API.account.getNFTsForContract(options);
 
-        const totalNum = NFTs.total;
-        const pageSize = NFTs.page_size;
-        console.log(totalNum);
-        console.log(pageSize);
+        // const totalNum = NFTs.total;
+        // const pageSize = NFTs.page_size;
+        // console.log(totalNum);
+        // console.log(pageSize);
         let allNFTs = NFTs.result;
 
         let nftResult = [];

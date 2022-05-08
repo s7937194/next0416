@@ -11,6 +11,7 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
 
     const [detailSwitch, setDetailSwitch] = useState(false)
     const [nft, setNft] = useState();
+    const [nftInContract, setNftInContract] = useState();
     const [nftDetail, setNftDetail] = useState();
     const [price, setPrice] = useState(1);
 
@@ -31,6 +32,17 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
 
     const handleSelectToken = async (num) => {
         if (num && collectionName) {
+            try {
+                const listItem = await Moralis.executeFunction({
+                    functionName: "listings",
+                    params : { "": num },
+                    ...ercOpts,
+                });
+                setNftInContract(listItem);
+            } catch (err) {
+                console.log("Error getting listings"+ err.message);
+            }
+
             const dbNFTs = Moralis.Object.extend(collectionName);
             const query = new Moralis.Query(dbNFTs);
             query.equalTo("tokenId", num);
@@ -38,9 +50,13 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
 
             if (selectedNFT != null) {
                 selectedNFT = selectedNFT.attributes;
-                setNft(selectedNFT);
-                console.log(selectedNFT);
+            } else {
+                selectedNFT = {
+                    tokenId: num,
+                    image: "",
+                }
             }
+            setNft(selectedNFT);
         }
     }
 
@@ -83,7 +99,7 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                 <div className="modal-box">
                     <div className="flex justify-between items-center pb-2">
                         <a className="underline" target="_blank">
-                            <strong className="text-2xl">{`${collectionName} #${nft.tokenId}`}</strong>
+                            <strong className="text-2xl">{`${collectionName} #${tokenId}`}</strong>
                         </a>
                         
                         <label htmlFor={"MarketNftModel_"+tokenId} >
@@ -97,11 +113,14 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                     <div className="px-md">
                         <div className="flex gap-x-md mb-8" >
                             <div className="relative h-[200px] xs:h-[120px]">
-                                <figure><img className="w-[200px] h-[200px] rounded-xl" src={nft.image} alt={`${collectionName} #${nft.tokenId}`} /></figure>
+                                {nft && 
+                                    <figure><img className="w-[200px] h-[200px] rounded-xl" src={nft.image} alt={`${collectionName} #${nft.tokenId}`} /></figure>
+                                }
+                                
                             </div>
                             <div className="flex justify-between items-start ml-6 flex-col">
                                 <div className="flex flex-col text-md w-full">
-                                    <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
+                                    {/* <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Owner: &nbsp;</strong>
                                         <a className="underline" href="/">0xa5b7...c68de6</a>
                                     </span>
@@ -109,22 +128,22 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                                     <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Creator: &nbsp;</strong>
                                         <a className="underline" href="/">0xddc1...7de2bc</a>
-                                    </span>
+                                    </span> */}
                                     <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Rarity: &nbsp;</strong>
                                         <div className="text-blue-600 bg-slate-200 rounded-xl px-3">
-                                                {rarity}
+                                                {nft && nft.rarityTag}
                                         </div>
                                     </span>
 
-                                    <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
+                                    {/* <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Last Price: &nbsp;</strong>
                                         <a> 5 <Image src={Avax} width={13} height={13}/></a>
-                                    </span>
+                                    </span> */}
                                 </div>
 
                                 <button className="btn rounded-full text-xl px-10">
-                                    7 &nbsp;<Image src={Avax} width={20} height={20}/>&nbsp; BUY
+                                    {nftInContract && nftInContract.price.toString()} &nbsp;<Image src={Avax} width={20} height={20}/>&nbsp; BUY
                                 </button>
                             </div>
                         </div>
@@ -141,10 +160,10 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                             <div className="text-xl xs:text-lg mb-xs text-left m-2 font-bold mt-6">Attributes</div>
                             <div className="grid grid-cols-2 gap-y-[4px] gap-x-md xs:gap-xs z-[1]">
 
-                            {nft.attributes && 
+                            {nft && nft.attributes && 
                                 nft.attributes.map((e, index) => {
                                     return (
-                                    <div className="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
+                                    <div key={index} className="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
                                         <strong className="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-primary text-base">{e.trait_type}</strong>
                                         <span className="ml-6 capitalize text-base">{e.value ? e.value : "<null>"}</span>
                                     </div>

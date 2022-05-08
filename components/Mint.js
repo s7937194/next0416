@@ -1,9 +1,11 @@
-import { useState} from "react"
+import {useState} from "react"
 import Typewriter from "typewriter-effect";
 
-import { useMoralis, useMoralisWeb3Api } from "react-moralis"
+import {useMoralis, useMoralisWeb3Api} from "react-moralis"
 import {cryptoboysAddress } from "../config"
 import CryptoBoyContract from "../abis/CryptoBoys.json"
+
+import generateRarity from "./saveToMoralis";
 
 const Mint = () => {
     let [count, setCount] = useState(1);
@@ -82,9 +84,10 @@ const Mint = () => {
                     </h1>      
                     <h1 className="text-2xl font-bold">Bored Of Apes? Try Something New.</h1>
                     <button className=" btn-primary rounded-full w-10 h-10 mx-1" onClick={incrementCount} >+</button>
-                    <input type="nember" placeholder="Type here" className="input w-20 max-w-xs mx-1 " value={count}/>
+                    <input type="nember" placeholder="Type here" className="input w-20 max-w-xs mx-1 " defaultValue={count}/>
                     <button className=" btn-primary rounded-full w-10 h-10 mx-1" onClick={decrementCount} >-</button>
                     <button className="btn btn-primary mx-3" onClick={initMint}>Mint</button>
+                    <generateRarity />
                 </div>
             </div>
         </div>

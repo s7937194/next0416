@@ -186,7 +186,7 @@ const WalletNftModel = ({tokenId=""}) => {
                                         <div className="form-control w-full  flex justify-center">
                                                 <h3 className="font-bold text-2xl mb-5 mt-5">Sell your NFT on the marketplace</h3>
                                                 <div>
-                                                    <input value={price} onChange={event => setPrice(event.target.value)} type="number" placeholder="1" className="input input-bordered w-[60%] "/>
+                                                    <input defaultValue={price} onChange={event => setPrice(event.target.value)} type="number" placeholder="1" className="input input-bordered w-[60%] "/>
                                                 </div>
                                                 <span className="label-text-alt">Price in AVAX</span>
                                                 

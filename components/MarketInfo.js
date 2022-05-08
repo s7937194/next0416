@@ -28,12 +28,16 @@ const MarketInfo = () => {
             abi: MarketContract,
         };
 
-        const resp = await Moralis.executeFunction({
-            functionName: "totalActiveListings",
-            ...options,
-        });
-
-        setTotalActiveListings(resp.toNumber());
+        try {
+            const resp = await Moralis.executeFunction({
+                functionName: "totalActiveListings",
+                ...options,
+            });
+    
+            setTotalActiveListings(resp.toNumber());
+        } catch {
+            console.log("Error getting total active listings");
+        }
     }
 
     const getHighestSalePrice = async () => {
@@ -43,12 +47,16 @@ const MarketInfo = () => {
             abi: MarketContract,
         };
 
-        const resp = await Moralis.executeFunction({
-            functionName: "highestSalePrice",
-            ...options,
-        });
-
-        setHighestSalePrice(resp.toNumber());
+        try {
+            const resp = await Moralis.executeFunction({
+                functionName: "highestSalePrice",
+                ...options,
+            });
+    
+            setHighestSalePrice(resp.toNumber());
+        } catch (err) {
+            console.log("Error getting highest sale price" + err.message);
+        }
     }
 
     const getTotalSales = async () => {
@@ -58,12 +66,16 @@ const MarketInfo = () => {
             abi: MarketContract,
         };
 
-        const resp = await Moralis.executeFunction({
-            functionName: "totalSales",
-            ...options,
-        });
-
-        setTotalSales(resp.toNumber());
+        try {
+            const resp = await Moralis.executeFunction({
+                functionName: "totalSales",
+                ...options,
+            });
+    
+            setTotalSales(resp.toNumber());
+        } catch {
+            console.log("Error getting totalSales");
+        }
     }
 
     const getNFTOwners = async () => {
