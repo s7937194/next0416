@@ -5,6 +5,7 @@ import WalletNftModel from "../components/WalletNftModel";
 import React, {useState, useEffect} from 'react'
 import { useMoralis } from "react-moralis"
 import {cryptoboysAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName} from "../config"
+import { resolveLink } from "../helpers/formatters";
 
 const Wallet = () => {
 
@@ -71,11 +72,6 @@ const Wallet = () => {
         setNFTResult(nftResult);
     };
 
-    const resolveLink = (url) => {
-        if (!url || !url.includes("ipfs://")) return url;
-        return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
-    };
-
     async function saveDB(nftData) {
         // console.log(nftData);
 
@@ -99,6 +95,7 @@ const Wallet = () => {
             }
             newObject.set("tokenId", nftData.token_id);
             newObject.set("image", nftData.image);
+            newObject.set("isForSale", false);
 
             await newObject.save();
         }

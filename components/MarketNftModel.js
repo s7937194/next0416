@@ -6,8 +6,9 @@ import { useMoralis, useMoralisWeb3Api } from "react-moralis"
 import {cryptoboysAddress, marketAddress, chain, collectionName } from "../config"
 import MarketContract from "../abis/Market.json"
 import NFTContract from "../abis/CryptoBoys.json"
+import { resolveLink, getEllipsisTxt } from "../helpers/formatters";
 
-const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
+const MarketNftModel = ({src="", tokenId="", name="", rarity="Common", isForSale=false}) => {
 
     const [detailSwitch, setDetailSwitch] = useState(false)
     const [nft, setNft] = useState();
@@ -18,20 +19,18 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
     const { account, Moralis } = useMoralis();
     const Web3Api = useMoralisWeb3Api();
 
+    const ercOpts = {
+        contractAddress: marketAddress,
+        abi: MarketContract,
+    };
+
     const headleDetailSwitch = () =>{
         if (detailSwitch) setDetailSwitch(false)
         else setDetailSwitch(true)
     }
 
-    const resolveAddress = (address) => {
-        if (!address || address.length < 10) {
-            return address;
-        }
-        return address.substr(0,6)+"..."+address.substr(address.length-6);
-    };
-
     const handleSelectToken = async (num) => {
-        if (num && collectionName) {
+        if (num && collectionName && isForSale) {
             try {
                 const listItem = await Moralis.executeFunction({
                     functionName: "listings",
@@ -39,6 +38,7 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                     ...ercOpts,
                 });
                 setNftInContract(listItem);
+                setPrice(listItem.price.toString());
             } catch (err) {
                 console.log("Error getting listings"+ err.message);
             }
@@ -78,6 +78,23 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
         }
     }
 
+    const buyNFT = async (tokenId) => {
+        if (tokenId){
+            try {
+                const fill = await Moralis.executeFunction({
+                    functionName: "fulfillListing",
+                    params : { "id": tokenId },
+                    msgValue: Moralis.Units.ETH(price),
+                    ...ercOpts,
+                });
+                await fill.wait();
+                console.log("buy success" + fill);
+            } catch (err) {
+                console.log("Error:"+ err.message);
+            }
+        }
+    }
+
     useEffect( async () => {
         let isMounted = false;
 
@@ -114,7 +131,7 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                         <div className="flex gap-x-md mb-8" >
                             <div className="relative h-[200px] xs:h-[120px]">
                                 {nft && 
-                                    <figure><img className="w-[200px] h-[200px] rounded-xl" src={nft.image} alt={`${collectionName} #${nft.tokenId}`} /></figure>
+                                    <figure><img className="w-[200px] h-[200px] rounded-xl" src={src} alt={`${collectionName} #${nft.tokenId}`} /></figure>
                                 }
                                 
                             </div>
@@ -142,7 +159,7 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                                     </span> */}
                                 </div>
 
-                                <button className="btn rounded-full text-xl px-10">
+                                <button onClick={() => buyNFT(nft.tokenId)} className="btn rounded-full text-xl px-10">
                                     {nftInContract && nftInContract.price.toString()} &nbsp;<Image src={Avax} width={20} height={20}/>&nbsp; BUY
                                 </button>
                             </div>
@@ -190,7 +207,7 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                                         <div className="flex   mb-2">
                                             <div className="flex xs:flex-col">
                                                 <strong>TX ID: &nbsp;</strong>
-                                                <a className="flex mr-2  underline" href="">{resolveAddress(e.transaction_hash)}</a>
+                                                <a className="flex mr-2  underline" href="">{getEllipsisTxt(e.transaction_hash)}</a>
                                             </div>
                                             <div className="flex xs:flex-col">
                                                 <strong>Token ID: &nbsp;</strong>
@@ -202,12 +219,12 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common"}) => {
                                         <div className="flex items-center">         
                                             <div className="flex flex-col ">
                                                 <strong>From</strong>
-                                                <a className=" underline" href="">{resolveAddress(e.from_address)}</a>
+                                                <a className=" underline" href="">{getEllipsisTxt(e.from_address)}</a>
                                             </div>
                                             <div className="px-4 text-2xl xs:px-xs"> »</div>
                                             <div className="flex flex-col ">
                                                 <strong>To</strong>
-                                                <a className=" underline" href="">{resolveAddress(e.to_address)}</a>
+                                                <a className=" underline" href="">{getEllipsisTxt(e.to_address)}</a>
                                             </div>
                                             <div className="flex justify-end flex-1 pr-lg">
                                                 <div className="flex items-center ">

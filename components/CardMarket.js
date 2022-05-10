@@ -6,29 +6,34 @@ import { useMoralis, useMoralisWeb3Api } from "react-moralis"
 import {marketAddress, cryptoboysAddress, chain} from "../config"
 import MarketContract from "../abis/Market.json"
 
-const CardMarket = ({src="", tokenId="", name="", rarity="Common"}) => {
+const CardMarket = ({src="", tokenId="", name="", rarity="Common", isForSale=false}) => {
 
     const { account, Moralis } = useMoralis();
     const [nft, setNft] = useState();
     // const Web3Api = useMoralisWeb3Api();
 
     const getListing = async (id) => {
-        const ercOpts = {
-            contractAddress: marketAddress,
-            abi: MarketContract,
-        };
-
-        try {
-            const listItem = await Moralis.executeFunction({
-                functionName: "listings",
-                params : { "": id },
-                ...ercOpts,
-            });
-            setNft(listItem);
-        } catch (err) {
-            console.log("Error getting listings"+ err.message);
+        if (!isForSale){
+            setNft({
+                price: 0,
+            })
+        } else {
+            const ercOpts = {
+                contractAddress: marketAddress,
+                abi: MarketContract,
+            };
+    
+            try {
+                const listItem = await Moralis.executeFunction({
+                    functionName: "listings",
+                    params : { "": id },
+                    ...ercOpts,
+                });
+                setNft(listItem);
+            } catch (err) {
+                console.log("Error getting listings"+ err.message);
+            }
         }
-        
     }
 
     useEffect( async () => {

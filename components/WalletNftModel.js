@@ -6,6 +6,7 @@ import { useMoralis, useMoralisWeb3Api } from "react-moralis"
 import {cryptoboysAddress, marketAddress, chain, collectionName } from "../config"
 import MarketContract from "../abis/Market.json"
 import NFTContract from "../abis/CryptoBoys.json"
+import { resolveLink, getEllipsisTxt } from "../helpers/formatters";
 
 const WalletNftModel = ({tokenId=""}) => {
 
@@ -21,13 +22,6 @@ const WalletNftModel = ({tokenId=""}) => {
         if (detailSwitch) setDetailSwitch(false)
         else setDetailSwitch(true)
     }
-
-    const resolveAddress = (address) => {
-        if (!address || address.length < 10) {
-            return address;
-        }
-        return address.substr(0,6)+"..."+address.substr(address.length-6);
-    };
 
     const handleSelectToken = async (num) => {
         if (num && collectionName) {
@@ -113,7 +107,10 @@ const WalletNftModel = ({tokenId=""}) => {
         
         const addListing = await Moralis.executeFunction({
             functionName: "addListing",
-            params : {tokenId : tokenId, price : price},
+            params : {
+                tokenId : tokenId, 
+                price : Moralis.Units.ETH(price)
+            },
             ...MarketOpts,
         });
         const respListing = await addListing.wait();
@@ -247,7 +244,7 @@ const WalletNftModel = ({tokenId=""}) => {
                                             <div className="flex   mb-2">
                                                 <div className="flex xs:flex-col">
                                                     <strong>TX ID: &nbsp;</strong>
-                                                    <a className="flex mr-2  underline" href="">{resolveAddress(e.transaction_hash)}</a>
+                                                    <a className="flex mr-2  underline" href="">{getEllipsisTxt(e.transaction_hash)}</a>
                                                 </div>
                                                 <div className="flex xs:flex-col">
                                                     <strong>Token ID: &nbsp;</strong>
@@ -261,12 +258,12 @@ const WalletNftModel = ({tokenId=""}) => {
                                                     
                                                 <div className="flex flex-col ">
                                                     <strong>From</strong>
-                                                    <a className=" underline" href="">{resolveAddress(e.from_address)}</a>
+                                                    <a className=" underline" href="">{getEllipsisTxt(e.from_address)}</a>
                                                 </div>
                                                 <div className="px-4 text-2xl xs:px-xs"> »</div>
                                                 <div className="flex flex-col ">
                                                     <strong>To</strong>
-                                                    <a className=" underline" href="">{resolveAddress(e.to_address)}</a>
+                                                    <a className=" underline" href="">{getEllipsisTxt(e.to_address)}</a>
                                                 </div>
                                                 <div className="flex justify-end flex-1 pr-lg">
                                                     <div className="flex items-center ">
