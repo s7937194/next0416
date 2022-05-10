@@ -2,14 +2,8 @@ import { useState, useEffect } from 'react';
 import { useMoralis, useMoralisWeb3Api } from "react-moralis"
 import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName } from "../config"
 
-
-const resolveLink = (url) => {
-    if (!url || !url.includes("ipfs://")) return url;
-    return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
-};
-
-
-const generateRarity = async () => {
+export const GenerateRarity = async () => {
+    
     console,log("generateRarity");
 
     const Web3Api = useMoralisWeb3Api();
@@ -26,6 +20,6 @@ const generateRarity = async () => {
         const nft = allNFTs[i];
         console,log(nft);
     }
-}
 
-export default generateRarity;
+    return true;
+}

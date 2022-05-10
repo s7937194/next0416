@@ -2,15 +2,13 @@ import {useState} from "react"
 import Typewriter from "typewriter-effect";
 
 import {useMoralis, useMoralisWeb3Api} from "react-moralis"
-import {cryptoboysAddress } from "../config"
+import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName } from "../config"
 import CryptoBoyContract from "../abis/CryptoBoys.json"
-
-import generateRarity from "./saveToMoralis";
 
 const Mint = () => {
     let [count, setCount] = useState(1);
-    const { user, account, authenticate, Moralis } = useMoralis();
-    const Web3Api = useMoralisWeb3Api();
+    let [isLoading, setIsLoading] = useState();
+    const { user, authenticate, Moralis } = useMoralis();
 
     function incrementCount() {
         count = count + 1;
@@ -23,8 +21,9 @@ const Mint = () => {
     }
 
     async function initMint () {
-        console.log(user);
-
+        if (isLoading) {
+            return
+        }
         if (!user) {
             try {
                 user = await authenticate()
@@ -38,6 +37,8 @@ const Mint = () => {
     }
 
     async function mintNFT(){
+        setIsLoading(true);
+
         await Moralis.enableWeb3();
         const options = {
             contractAddress: cryptoboysAddress,
@@ -51,9 +52,9 @@ const Mint = () => {
             ...options,
         });
         console.log(mint);
-
         await mint.wait();
         alert("success");
+        setIsLoading(false);
     }
 
     return ( 
@@ -86,8 +87,7 @@ const Mint = () => {
                     <button className=" btn-primary rounded-full w-10 h-10 mx-1" onClick={incrementCount} >+</button>
                     <input type="nember" placeholder="Type here" className="input w-20 max-w-xs mx-1 " defaultValue={count}/>
                     <button className=" btn-primary rounded-full w-10 h-10 mx-1" onClick={decrementCount} >-</button>
-                    <button className="btn btn-primary mx-3" onClick={initMint}>Mint</button>
-                    <generateRarity />
+                    <button className="btn btn-primary mx-3" onClick={initMint}>   {!isLoading ?("Mint"):("Loading")}</button>
                 </div>
             </div>
         </div>

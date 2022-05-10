@@ -4,7 +4,7 @@ import WalletNftModel from "../components/WalletNftModel";
 
 import React, {useState, useEffect} from 'react'
 import { useMoralis } from "react-moralis"
-import {cryptoboysAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID } from "../config"
+import {cryptoboysAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName} from "../config"
 
 const Wallet = () => {
 
@@ -61,7 +61,7 @@ const Wallet = () => {
                     console.log(error);
                 }
             }
-        
+            saveDB(allNFTs[j]);
             nftResult.push({
                 name: allNFTs[j].name,
                 token_id: allNFTs[j].token_id,
@@ -75,6 +75,34 @@ const Wallet = () => {
         if (!url || !url.includes("ipfs://")) return url;
         return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
     };
+
+    async function saveDB(nftData) {
+        // console.log(nftData);
+
+        const dbNFTs = Moralis.Object.extend(collectionName);
+        const query = new Moralis.Query(dbNFTs);
+        
+        let selectedNFT = await query.equalTo("tokenId", nftData.token_id).first();
+        if (!selectedNFT) {
+
+            const newClass = Moralis.Object.extend(collectionName);
+            const newObject = new newClass();
+
+            if (nftData.metadata) {
+                let attr = nftData.metadata.attributes;
+                for (let j = 0; j < attr.length; j++) {
+                    let key = attr[j].trait_type;
+                    let value = attr[j].value;
+                    newObject.set(key, value);
+                }
+                newObject.set("attributes", attr);
+            }
+            newObject.set("tokenId", nftData.token_id);
+            newObject.set("image", nftData.image);
+
+            await newObject.save();
+        }
+    } 
 
     return ( 
         <div className="hero min-h-screen bg-base-200 ">
