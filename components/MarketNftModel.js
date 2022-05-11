@@ -12,9 +12,10 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common", isForSale
 
     const [detailSwitch, setDetailSwitch] = useState(false)
     const [nft, setNft] = useState();
-    const [nftInContract, setNftInContract] = useState();
+    // const [nftInContract, setNftInContract] = useState();
     const [nftDetail, setNftDetail] = useState();
-    const [price, setPrice] = useState(1);
+    const [price, setPrice] = useState(0);
+    const [lastPrice, setLastPrice] = useState(0);
 
     const { account, Moralis } = useMoralis();
     const Web3Api = useMoralisWeb3Api();
@@ -32,13 +33,29 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common", isForSale
     const handleSelectToken = async (num) => {
         if (num && collectionName && isForSale) {
             try {
-                const listItem = await Moralis.executeFunction({
-                    functionName: "listings",
-                    params : { "": num },
-                    ...ercOpts,
-                });
-                setNftInContract(listItem);
-                setPrice(listItem.price.toString());
+                // const listItem = await Moralis.executeFunction({
+                //     functionName: "listings",
+                //     params : { "": num },
+                //     ...ercOpts,
+                // });
+                // setNftInContract(listItem);
+                // setPrice(listItem.price.toString());
+                if (isForSale){
+                    const dbNFTs = Moralis.Object.extend(collectionName+"_price");
+                    const query = new Moralis.Query(dbNFTs);
+                    let results = await query.equalTo("tokenId", num).limit(2).descending("createAt").find();
+                    
+                    if (results.length == 2) {
+                        setPrice(results[0].attributes.SalePrice)
+                        setLastPrice(results[1].attributes.SalePrice)
+                    } else {
+                        for (let i = 0; i < results.length; i++) {
+                            const obj = results[i].attributes;
+                            setPrice(obj.SalePrice);
+                        }
+                    }
+                }
+
             } catch (err) {
                 console.log("Error getting listings"+ err.message);
             }
@@ -149,18 +166,18 @@ const MarketNftModel = ({src="", tokenId="", name="", rarity="Common", isForSale
                                     <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Rarity: &nbsp;</strong>
                                         <div className="text-blue-600 bg-slate-200 rounded-xl px-3">
-                                                {nft && nft.rarityTag}
+                                                {nft && nft.RarityTag}
                                         </div>
                                     </span>
 
-                                    {/* <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
+                                    <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Last Price: &nbsp;</strong>
-                                        <a> 5 <Image src={Avax} width={13} height={13}/></a>
-                                    </span> */}
+                                        <a> {lastPrice} <Image src={Avax} width={13} height={13}/></a>
+                                    </span>
                                 </div>
 
                                 <button onClick={() => buyNFT(nft.tokenId)} className="btn rounded-full text-xl px-10">
-                                    {nftInContract && nftInContract.price.toString()} &nbsp;<Image src={Avax} width={20} height={20}/>&nbsp; BUY
+                                    {price} &nbsp;<Image src={Avax} width={20} height={20}/>&nbsp; BUY
                                 </button>
                             </div>
                         </div>

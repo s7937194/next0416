@@ -10,3 +10,21 @@ export const ENV_ChainId = 4;
 export const chunkSize = 5;
 
 export const collectionName = "Survivors";
+
+export const RarityPrice = {
+    "Black" : 1,
+    "High" : 3,
+    "Middle" : 2,
+    "Low" : 1,
+    "Cyan" : 2,
+    "Green" : 2,
+    "Pink" : 2,
+    "Purple" : 2,
+    "Red" : 2,
+    "Yellow" : 1,
+    "White" : 1,
+    "Large" : 3,
+    "Small" : 1,
+    "Shapes" : 1,
+    "Medium" : 2,
+};

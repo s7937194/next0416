@@ -44,3 +44,25 @@ export const resolveLink = (url) => {
     if (!url || !url.includes("ipfs://")) return url;
     return url.replace("ipfs://", "https://gateway.ipfs.io/ipfs/");
 };
+
+export const attributesRarityPrice = (rarityPriceJson, attributes) => {
+    let rarity = 0;
+    for (let i = 0; i < attributes.length; i++){
+        let val = attributes[i].value;
+        rarity += rarityPriceJson[val]
+    }
+    return rarity;
+};
+
+export const getRarityTag = (price) => {
+    if (price < 5) {
+        return "Common";
+    } else if (price >=5 && price < 7) {
+        return "Uncommon";
+    } else if (price >= 7 && price < 9) {
+        return "Rare";
+    } else if (price >= 9 && price < 11) {
+        return "Mystic"
+    }
+    return "Legendary";
+}

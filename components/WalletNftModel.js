@@ -3,52 +3,26 @@ import { useState, useEffect } from 'react';
 import Avax from  '../assets/image/avax.svg'
 
 import { useMoralis, useMoralisWeb3Api } from "react-moralis"
-import {cryptoboysAddress, marketAddress, chain, collectionName } from "../config"
+import {cryptoboysAddress, marketAddress, chain, collectionName, RarityPrice } from "../config"
 import MarketContract from "../abis/Market.json"
 import NFTContract from "../abis/CryptoBoys.json"
-import { resolveLink, getEllipsisTxt } from "../helpers/formatters";
+import {getEllipsisTxt, attributesRarityPrice, getRarityTag } from "../helpers/formatters";
 
-const WalletNftModel = ({tokenId=""}) => {
+const WalletNftModel = ({nftData}) => {
 
     const [detailSwitch,setDetailSwitch] = useState(false)
-    const [nft, setNft] = useState();
     const [nftDetail, setNftDetail] = useState();
     const [price, setPrice] = useState(1);
+    const [lastPrice, setLastPrice] = useState(0);
+    const [tokenId, setTokenId] = useState(nftData.token_id);
 
     const { account, Moralis } = useMoralis();
     const Web3Api = useMoralisWeb3Api();
 
+
     const headleDetailSwitch = () =>{
         if (detailSwitch) setDetailSwitch(false)
         else setDetailSwitch(true)
-    }
-
-    const handleSelectToken = async (num) => {
-        if (num && collectionName) {
-            const dbNFTs = Moralis.Object.extend(collectionName);
-            const query = new Moralis.Query(dbNFTs);
-            query.equalTo("tokenId", num);
-            let selectedNFT = await query.first();
-
-            if (selectedNFT != null) {
-                selectedNFT = selectedNFT.attributes;
-                // console.log(selectedNFT);
-                setNft(selectedNFT);
-                // setDetailSwitch(true);
-            }
-        }
-        // if (num) {
-        //     const options = {
-        //         address: cryptoboysAddress,
-        //         token_id: tokenId,
-        //         chain: chain,
-        //     };
-        //     const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
-        //     let metadata = JSON.parse(tokenIdMetadata.metadata)
-
-        //     console.log(metadata);
-        //     setNft(metadata);
-        // }
     }
 
     const handleTokenDetail = async (tokenId) => {
@@ -64,65 +38,73 @@ const WalletNftModel = ({tokenId=""}) => {
                 // console.log(tokenIdMetadata.result);
                 setNftDetail(tokenIdMetadata.result);
             }
-        } catch {
-            console.log("err: "+ tokenId);
+
+            const dbNFTs = Moralis.Object.extend(collectionName+"_price");
+            const query = new Moralis.Query(dbNFTs);
+            let results = await query.equalTo("tokenId", tokenId).descending("createAt").first();
+            if (results) {
+                setLastPrice(results.SalePrice);
+            }
+        } catch (err) {
+            console.log("err: "+ err.message);
         }
     }
 
     const listNFT = async (tokenId) => {
         await Moralis.enableWeb3();
 
-        const ercOpts = {
-            contractAddress: cryptoboysAddress,
-            abi: NFTContract,
-        };
+        // const ercOpts = {
+        //     contractAddress: cryptoboysAddress,
+        //     abi: NFTContract,
+        // };
 
-        const isApprove = await Moralis.executeFunction({
-            functionName: "isApprovedForAll",
-            params : {operator : marketAddress, owner : account},
-            ...ercOpts,
-        });
+        // const setApprove = await Moralis.executeFunction({
+        //     functionName: "approve",
+        //     params : {to : marketAddress, tokenId : tokenId},
+        //     ...ercOpts,
+        // });
+        // await setApprove.wait();
 
-        // if (isApprove == false) {
-        //     const setApprove = await Moralis.executeFunction({
-        //         functionName: "setApprovalForAll",
-        //         params : {operator : marketAddress, approved : true},
-        //         ...ercOpts,
-        //     });
-    
-        //     await setApprove.wait();
-        // }
-        const setApprove = await Moralis.executeFunction({
-            functionName: "approve",
-            params : {to : marketAddress, tokenId : tokenId},
-            ...ercOpts,
-        });
-
-        const resp = await setApprove.wait();
-
-        const MarketOpts = {
-            contractAddress: marketAddress,
-            abi: MarketContract,
-        };
+        // const MarketOpts = {
+        //     contractAddress: marketAddress,
+        //     abi: MarketContract,
+        // };
         
-        const addListing = await Moralis.executeFunction({
-            functionName: "addListing",
-            params : {
-                tokenId : tokenId, 
-                price : Moralis.Units.ETH(price)
-            },
-            ...MarketOpts,
-        });
-        const respListing = await addListing.wait();
-        console.log(respListing);
-        window.location.reload()
+        // const addListing = await Moralis.executeFunction({
+        //     functionName: "addListing",
+        //     params : {
+        //         tokenId : tokenId, 
+        //         price : Moralis.Units.ETH(price)
+        //     },
+        //     ...MarketOpts,
+        // });
+        // const respListing = await addListing.wait();
+
+        await saveListingPrice(tokenId, price);
+
+        // console.log(respListing);
+        // window.location.reload()
+    }
+
+    const saveListingPrice = async (tokenId, salePrice) => {
+        if (tokenId) {
+            const newClass = Moralis.Object.extend(collectionName+"_price");
+            const newObject = new newClass();
+
+            let rarity = attributesRarityPrice(RarityPrice, nftData.attributes).toString();
+            let rarityTag = getRarityTag(parseInt(rarity));
+            newObject.set("tokenId", tokenId);
+            newObject.set("SalePrice", salePrice);
+            newObject.set("Rarity", rarity);
+            newObject.set("RarityTag", rarityTag);
+            await newObject.save();
+        }
     }
 
     useEffect( async () => {
         let isMounted = false;
 
         if (!isMounted) {
-            await handleSelectToken(tokenId);
             await handleTokenDetail(tokenId);
         }
 
@@ -135,12 +117,12 @@ const WalletNftModel = ({tokenId=""}) => {
     return (
         <div>
             <input type="checkbox" id={"WalletNftModel_"+tokenId} className="modal-toggle"/>
-            {nft && nftDetail && (
+            {nftData && nftDetail && (
                 <div className="modal bg-black bg-opacity-80" htmlFor={"WalletNftModel_"+tokenId}>
                 <div className="modal-box">
                     <div className="flex justify-between items-center pb-2">
                         <a className="underline" target="_blank">
-                            <strong className="text-2xl">{`${collectionName} #${nft.tokenId}`}</strong>
+                            <strong className="text-2xl">{`${collectionName} #${nftData.token_id}`}</strong>
                         </a>
                         
                         <label htmlFor={"WalletNftModel_"+tokenId}>
@@ -154,22 +136,22 @@ const WalletNftModel = ({tokenId=""}) => {
                     <div className="px-md">
                         <div className="flex gap-x-md mb-8" >
                             <div className="relative h-[200px] xs:h-[120px]">
-                                <figure><img className="w-[200px] h-[200px] rounded-xl" src={nft.image} alt={`${collectionName} #${nft.tokenId}`} /></figure>
+                                <figure><img className="w-[200px] h-[200px] rounded-xl" src={nftData.image} alt={`${collectionName} #${nftData.token_id}`} /></figure>
                             </div>
                             <div className="flex justify-between items-start ml-6 flex-col">
                                 <div className="flex flex-col text-md w-full">
                                     <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Rarity: &nbsp;</strong>
                                         <div className="text-blue-600 bg-slate-200 rounded-xl px-3">
-                                                {nft.rarity && (
-                                                    nft.rarity.toFixed(1)
+                                                {nftData.rarity && (
+                                                    nftData.rarity.toFixed(1)
                                                 )}
                                         </div>
                                     </span>
 
                                     <span className="flex flex-wrap pb-xs xs:pb-0 my-1">
                                         <strong>Last Price: &nbsp;</strong>
-                                        <a> {nft.price} <Image src={Avax} width={13} height={13}/></a>
+                                        <a> {lastPrice} <Image src={Avax} width={13} height={13}/></a>
                                     </span>
                                 </div>
 
@@ -211,8 +193,8 @@ const WalletNftModel = ({tokenId=""}) => {
                             <div className="text-xl xs:text-lg mb-xs text-left m-2 font-bold mt-6">Attributes</div>
 
                             <div className="grid grid-cols-2 gap-y-[4px] gap-x-md xs:gap-xs z-[1]">
-                                {nft.attributes && 
-                                    nft.attributes.map((e, index) => {
+                                {nftData.attributes && 
+                                    nftData.attributes.map((e, index) => {
                                         return (
                                             <div key={index}  className="flex items-center text-xs xs:text-[10px] rounded-xl border overflow-hidden border-solid mr-2 mb-2">
                                                 <strong className="uppercase p-2 xs:p-[4px] min-w-[80px] xs:min-w-[60px] h-full bg-primary text-base">{e.trait_type}</strong>

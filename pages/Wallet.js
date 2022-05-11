@@ -4,8 +4,8 @@ import WalletNftModel from "../components/WalletNftModel";
 
 import React, {useState, useEffect} from 'react'
 import { useMoralis } from "react-moralis"
-import {cryptoboysAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName} from "../config"
-import { resolveLink } from "../helpers/formatters";
+import {cryptoboysAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName, RarityPrice} from "../config"
+import { resolveLink, attributesRarityPrice, getRarityTag } from "../helpers/formatters";
 
 const Wallet = () => {
 
@@ -38,19 +38,14 @@ const Wallet = () => {
         };
 
         const NFTs = await Moralis.Web3API.account.getNFTsForContract(options);
-
-        // const totalNum = NFTs.total;
-        // const pageSize = NFTs.page_size;
-        // console.log(totalNum);
-        // console.log(pageSize);
         let allNFTs = NFTs.result;
-
         let nftResult = [];
         let metadata = allNFTs.map((e) => JSON.parse(e.metadata));
         for (let j = 0; j < metadata.length; j++) {
             if (allNFTs[j].metadata) {
                 allNFTs[j].metadata = JSON.parse(allNFTs[j].metadata);
                 allNFTs[j].image = resolveLink(allNFTs[j].metadata.image);
+                allNFTs[j].attributes = resolveLink(allNFTs[j].metadata.attributes);
             } else if (allNFTs[j].token_uri) {
                 try {
                     await fetch(allNFTs[j].token_uri)
@@ -62,11 +57,13 @@ const Wallet = () => {
                     console.log(error);
                 }
             }
-            saveDB(allNFTs[j]);
+            await saveDB(allNFTs[j]);
+
             nftResult.push({
                 name: allNFTs[j].name,
                 token_id: allNFTs[j].token_id,
                 image: allNFTs[j].image,
+                attributes: allNFTs[j].attributes,
             });
         }
         setNFTResult(nftResult);
@@ -80,7 +77,6 @@ const Wallet = () => {
         
         let selectedNFT = await query.equalTo("tokenId", nftData.token_id).first();
         if (!selectedNFT) {
-
             const newClass = Moralis.Object.extend(collectionName);
             const newObject = new newClass();
 
@@ -92,6 +88,11 @@ const Wallet = () => {
                     newObject.set(key, value);
                 }
                 newObject.set("attributes", attr);
+
+                let rarity = attributesRarityPrice(RarityPrice, attr).toString();
+                let rarityTag = getRarityTag(parseInt(rarity));
+                newObject.set("Rarity", rarity);
+                newObject.set("RarityTag", rarityTag);
             }
             newObject.set("tokenId", nftData.token_id);
             newObject.set("image", nftData.image);
@@ -108,9 +109,9 @@ const Wallet = () => {
                 <div className="flex flex-col justify-center items-center">                             
                     <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                         { NFTResult.length > 0 &&
-                            NFTResult.map((nft, index) => {
+                            NFTResult.sort((a, b) => (a.token_id > b.token_id) ? 1 : -1).map((nft, index) => {
                                 return (
-                                    <CardWalletNft key={index} tokenId={nft.token_id} src={nft.image} name={nft.name}/>
+                                    <CardWalletNft key={index} nftData={nft}/>
                                 );
                             })
                         }
@@ -118,7 +119,7 @@ const Wallet = () => {
                     { NFTResult.length > 0 ? (
                         NFTResult.map((nft, index) => {
                             return (
-                                <WalletNftModel key={index} tokenId={nft.token_id}/>
+                                <WalletNftModel key={index} nftData={nft}/>
                             );
                         })
                     ) : null }

@@ -5,8 +5,8 @@ import RecentModel from "./RecentModel";
 
 import React, {useState, useEffect} from 'react'
 import { useMoralis } from "react-moralis"
-import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName } from "../config"
-import { resolveLink } from "../helpers/formatters";
+import {cryptoboysAddress, marketAddress, chain, MORALIS_SERVER_URL, MORALIS_APPLICATION_ID, collectionName, RarityPrice } from "../config"
+import { resolveLink, attributesRarityPrice, getRarityTag } from "../helpers/formatters";
 
 const MarketItem = () => {
 
@@ -88,7 +88,7 @@ const MarketItem = () => {
                     console.log(error);
                 }
             }
-            saveDB(allNFTs[j]);
+            await saveDB(allNFTs[j]);
             nftResult.push({
                 name: allNFTs[j].name,
                 token_id: allNFTs[j].token_id,
@@ -116,6 +116,7 @@ const MarketItem = () => {
                 token_id: selectedNFT.tokenId,
                 image: selectedNFT.image,
                 isForSale: selectedNFT.isForSale,
+                rarity_tag: selectedNFT.RarityTag,
             }]);
         }
     };
@@ -124,7 +125,7 @@ const MarketItem = () => {
         if (rarityTag) {
             const dbNFTs = Moralis.Object.extend(collectionName);
             const query = new Moralis.Query(dbNFTs);
-            query.equalTo("rarityTag", rarityTag);
+            query.equalTo("RarityTag", rarityTag);
             if (forSale) {
                 query.equalTo("isForSale", forSale);
             }
@@ -138,7 +139,7 @@ const MarketItem = () => {
                     name: collectionName,
                     token_id: selectedNFT.tokenId,
                     image: selectedNFT.image,
-                    rarity_tag: selectedNFT.rarityTag,
+                    rarity_tag: selectedNFT.RarityTag,
                     isForSale: selectedNFT.isForSale,
                 });
             }
@@ -164,7 +165,7 @@ const MarketItem = () => {
                     name: collectionName,
                     token_id: selectedNFT.tokenId,
                     image: selectedNFT.image,
-                    rarity_tag: selectedNFT.rarityTag,
+                    rarity_tag: selectedNFT.RarityTag,
                     isForSale: selectedNFT.isForSale,
                 });
             }
@@ -192,6 +193,11 @@ const MarketItem = () => {
                     newObject.set(key, value);
                 }
                 newObject.set("attributes", attr);
+
+                let rarity = attributesRarityPrice(RarityPrice, attr).toString();
+                let rarityTag = getRarityTag(parseInt(rarity));
+                newObject.set("Rarity", rarity);
+                newObject.set("RarityTag", rarityTag);
             }
             newObject.set("tokenId", nftData.token_id);
             newObject.set("image", nftData.image);
@@ -255,11 +261,11 @@ const MarketItem = () => {
                                             handleSelectByRarity(e.target.value)
                                         }}>
                                         <option disabled selected>Rarity</option>
-                                        <option value="Lengendary">Lengendary</option>
-                                        <option value="Mystic">Mystic</option>
-                                        <option value="Rare">Rare</option>
-                                        <option value="Uncommon">Uncommon</option>
-                                        <option value="Common">Common</option>
+                                        <option defaultValue="Lengendary">Legendary</option>
+                                        <option defaultValue="Mystic">Mystic</option>
+                                        <option defaultValue="Rare">Rare</option>
+                                        <option defaultValue="Uncommon">Uncommon</option>
+                                        <option defaultValue="Common">Common</option>
                                     </select>
                                 </div>
 
@@ -269,9 +275,9 @@ const MarketItem = () => {
                                         handleSelectByAttr("Eyeball", e.target.value)
                                     }}>
                                         <option disabled selected>Eyeball</option>
-                                        <option value="White">White</option>
-                                        <option value="Yellow">Yellow</option>
-                                        <option value="Red">Red</option>
+                                        <option defaultValue="White">White</option>
+                                        <option defaultValue="Yellow">Yellow</option>
+                                        <option defaultValue="Red">Red</option>
                                         
                                     </select>
                                 </div>
@@ -281,7 +287,7 @@ const MarketItem = () => {
                                         handleSelectByAttr("Background", e.target.value)
                                     }}>
                                         <option disabled selected>Background</option>
-                                        <option value="Black">Black</option>
+                                        <option defaultValue="Black">Black</option>
                                     </select>
                                 </div>
                                 <div className="stat">
@@ -290,9 +296,9 @@ const MarketItem = () => {
                                         handleSelectByAttr("Iris", e.target.value)
                                     }}>
                                         <option disabled selected>Iris</option>
-                                        <option value="Small">Small</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Large">Large</option>
+                                        <option defaultValue="Small">Small</option>
+                                        <option defaultValue="Medium">Medium</option>
+                                        <option defaultValue="Large">Large</option>
                                         
                                     </select>
                                 </div>
@@ -312,7 +318,7 @@ const MarketItem = () => {
                     <div className="flex flex-row flex-wrap card rounded-box place-items-center borde  justify-center items-center">
                         { NFTResult.length > 0 && NFTResult.map((nft, index) => {
                             return (
-                                <CardMarket key={index} tokenId={nft.token_id} src={nft.image} name={nft.name} rarity={nft.rarity_tag} isForSale={nft.isForSale}/>
+                                <CardMarket key={index} nftData={nft}/>
                             );
                         }) }
                     </div>

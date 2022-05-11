@@ -15,7 +15,7 @@ const Navbar = () => {
         if (account != null) {
             await setAddress(getEllipsisTxt(account, 6));
         }
-        console.log(address);
+        // console.log(address);
         
     }, [account])
     
